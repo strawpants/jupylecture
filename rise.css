@@ -1,0 +1,29 @@
+#rise-header {
+    margin: 0px;
+    left: 10%;
+}
+
+#rise-footer {
+    margin: 10px;
+    padding-right:120px;
+    padding-left:120px;
+    width:100%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:right;
+}
+
+.reveal h1, h2, h3 {
+  margin:0px;
+
+}
+
+#footertext {
+    min-width: 80%;
+}
+
+
+#rise-backimage {
+    opacity: 0.20;
+}
+
