@@ -3,19 +3,72 @@
     left: 10%;
 }
 
+
+sup {
+    top:0em;
+}
+
 /*Allow images to meld in with their background*/
 .reveal section img{
   background: transparent;
 }
 
-/*put content side -by side within a cell*/
-.sidebyside {
-  display:inline;
-}
-
- .container.slides .celltoolbar, .container.slides div.input.hide-in-slideshow {
+.container.slides .celltoolbar, .container.slides div.input.hide-in-slideshow {
     display: none ! important;
 }
+
+.flxsld {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content: space-between;    
+}
+
+.flxsld .flx100{
+ flex-basis:100%;  
+}
+
+.flxsld .flx80{
+ flex-basis:80%;  
+}
+
+.flxsld .flx20{
+ flex-basis:20%;  
+}
+
+.flxsld .flx75{
+ flex-basis:75%;  
+}
+
+.flxsld .flx25{
+ flex-basis:25%;  
+}
+
+
+.flxsld .flx50{
+ flex-basis:50%;  
+}
+
+.flxsld .flx33{
+ flex-basis:33%;  
+}
+
+.flxsld .flx67{
+ flex-basis:67%;  
+}
+
+.flxsld .flx40{
+ flex-basis:40%;  
+}
+
+.flxsld .flx60{
+ flex-basis:60%;  
+}
+
+.reveal .prompt{
+    min-width:0px;
+}
+
 
 #rise-footer {
     margin: 10px;
@@ -24,7 +77,7 @@
     width:100%;
     display:inline-flex;
     align-items:center;
-    justify-content:right;
+    justify-content:flex-end;
 }
 
 .reveal h1, h2, h3 {
