@@ -72,7 +72,7 @@ sup {
 
 #rise-footer {
     margin: 10px;
-    padding-right:120px;
+    padding-right:130px;
     padding-left:120px;
     width:100%;
     display:inline-flex;
@@ -89,6 +89,10 @@ sup {
     min-width: 80%;
 }
 
+#logobox{
+  margin-left:10px;
+  height:70px;
+}
 
 #rise-backimage {
     opacity: 0.20;

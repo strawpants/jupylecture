@@ -1,5 +1,5 @@
 # convenience tools for setting up lecture slides
-
+# Roelof Rietbroek 2020
 
 from IPython.display import Video,display_html,display_markdown,HTML,Markdown,display
 
@@ -117,6 +117,11 @@ class FlexSlide():
             el.attrib[hrefky]=re.sub("\S+/images/","images/",el.attrib[hrefky])
 
         self.payload+="\n<div \">\n\n"+ET.tostring(svgroot).decode('utf-8')+"</div>"
+
+    def addHTML(self,html):
+        """adds pure html to a flexslide"""
+        self.payload+="\n<div \">\n\n"+html+"</div>"
+
     def _repr_markdown_(self):
         # print("\n".join([self.mdhead,self.payload,self.mdfoot]))
 
