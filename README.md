@@ -25,6 +25,7 @@ After initialization you can start a jupyter instance and navigate to the notebo
 ## Tips and Tricks
 * Enable fullscreen when developing the lecture in a browser, this ensures that the aspect ratio of your lecture will be correct. 
 * A [bash script to export the notebooks](jupylecture2pdf.sh) is provided to convert the presentation to a pdf format
+* You can edit the slide description shown in the footer by going to `Edit-> Edit Notebook Metadata` 
 * For developers: When an editable installation has been performed (`pip install -e jupylecture`) it's possible to add the `--develop` flag to [jupylecture.py](jupylectureinit.py), so the css files and image files are symlinked instead of copied. This allows parallel development of lectures and this module (e.g. no need to update rise.css)
 
 
