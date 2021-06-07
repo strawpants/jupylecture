@@ -44,54 +44,96 @@ class FlexSlide():
         self.mdhead=title+"\n<div class=\"flxsld text_cell\" >\n"
         self.mdfoot="\n</div>"
         self.payload=""  
+    
+    @staticmethod
+    def formatClass(flxwidth=None,frag=False,absPos=False):
+        """constructs the appropriate html class string"""
 
-         
-
-    def addimg(self,path,caption="",flxwidth=None,width=None,frag=False):
-        """Adds an image"""
-        addcap=""
-        cls=""
-        if flxwidth:
-            cls="class=\"%s\""%flxwidth
-        if caption:
-            addcap="<small>%s</small>"%caption
-
-        if width:
-            md="<div %s><img src=\"%s\" alt=\"%s\" style=\"width:%s;\" />%s</div>"%(cls,path,caption,width,addcap)
+        if flxwidth or frag:
+            cls="class=\""
         else:
-            md="<div %s><img src=\"%s\" alt=\"%s\" />%s</div>"%(cls,path,caption,addcap)
-
-        self.addmd(md,frag=frag)
-            
-
-    def addmd(self,mdcontent,frag=False,flxwidth=None):
-        cls=""
+            return ""
 
         if flxwidth:
-            cls+=flxwidth
+            cls+=" %s"%flxwidth
+        
         if frag:
             cls+=" fragment fade-in"
+        
+        if absPos:
+            cls+=" flxabove"
 
-        self.payload+="\n<div class=\"%s\">\n\n"%(cls)+mdcontent+"</div>"
+        return cls+"\""
+    
+    @staticmethod
+    def formatStyle(width=None,top=None,left=None):
+        """constructs the appropriate html style string"""
+
+        if width or top or left:
+            style="style=\""
+        else:
+            return ""
+
+        if width:
+            style+="width:%s;"%width
+        
+        if top:
+            style+="top:%s;"%top
+         
+        if left:
+            style+="left:%s;"%left
+
+        return style+"\""
+
+
+    def addimg(self,path,caption="",flxwidth=None,width=None,frag=False,top=None,left=None):
+        """Adds an image"""
+        addcap=""
+        
+        if caption:
+            addcap="<small>%s</small>"%caption
+        
+        md="<img src=\"%s\" alt=\"%s\" %s />%s"%(path,caption,FlexSlide.formatStyle(width=width),addcap)
+        
+        self.addmd(md,frag=frag,flxwidth=flxwidth,top=top,left=left)
+            
+
+    def addmd(self,mdcontent,frag=False,flxwidth=None,top=None,left=None):
+        cls=FlexSlide.formatClass(flxwidth,frag,absPos=top or left)
+        style=FlexSlide.formatStyle(top=top,left=left)
+        self.payload+="\n<div %s %s>\n\n"%(cls,style)+mdcontent+"</div>"
 
 
     def addVideo(self,path,width=None):
         self.addmd(Video(path)._repr_html_(),width=width)
-        
-
-    def addItems(self,items,frag=False,flxwidth=None):       
+     
+    @staticmethod
+    def formatItems(items,frag):
+        """Format items in a list as html <ul>.. </ul>,possibly calling this function recursively to allow sublists"""
         html="<ul>"
 
         for item in items:
+            if type(item) == list:
+                #call this method recursively
+                html+=FlexSlide.formatItems(item,frag)
+                continue
+
             if frag:
                 html+="<li class=\"fragment fade-in\">%s</li>"%item
             else:
                 html+="<li>%s</li>"%item
 
         html+="</ul>"
+
+        return html
+
+    def addItems(self,items,frag=False,flxwidth=None):       
+        
+        html=FlexSlide.formatItems(items,frag)
+
         self.addmd(html,flxwidth=flxwidth)
 
-    def addSVG(self,svgname,width=None,height=None):
+    def addSVG(self,svgname,width=None,height=None,flxwidth=None):
         """Embed SVG as code in a code cell and fix relative links"""
 
         svgroot = ET.parse(svgname).getroot()
@@ -110,13 +152,14 @@ class FlexSlide():
 
 
         #change absolute embedded image links to relative links
-
-        hrefky="{"+svgroot.nsmap["xlink"]+"}href"
+        if "xlink" in svgroot.nsmap:
+            hrefky="{"+svgroot.nsmap["xlink"]+"}href"
         
-        for el in svgroot.findall(".//{*}image[@"+hrefky+"]"):
-            el.attrib[hrefky]=re.sub("\S+/images/","images/",el.attrib[hrefky])
+            for el in svgroot.findall(".//{*}image[@"+hrefky+"]"):
+                el.attrib[hrefky]=re.sub("\S+/images/","images/",el.attrib[hrefky]) 
 
-        self.payload+="\n<div \">\n\n"+ET.tostring(svgroot).decode('utf-8')+"</div>"
+        self.addmd(ET.tostring(svgroot).decode('utf-8'),flxwidth=flxwidth)
+        # self.payload+="\n<div \">\n\n"+ET.tostring(svgroot).decode('utf-8')+"</div>"
 
     def addHTML(self,html):
         """adds pure html to a flexslide"""
