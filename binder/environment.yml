@@ -2,6 +2,8 @@ channels:
   - conda-forge
 dependencies:
   - python
+  - markdown
+  - markdown-math
   - numpy
   - matplotlib
   - pandas

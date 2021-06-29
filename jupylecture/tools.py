@@ -11,8 +11,10 @@ import re
 
 from lxml import etree as ET
 
-from IPython.display import Markdown
+import markdown
 
+
+mdp=markdown.Markdown(extensions=['mdx_math'])
 
 
 def hideCode():   
@@ -41,12 +43,13 @@ class FlexSlide():
     """Class which setups the cell output as a flex container, which allows more flexible structuring (see also the rise.css file)"""
     def __init__(self,title):
         hideCode()
-        self.mdhead=title+"\n<div class=\"flxsld text_cell\" >\n"
+
+        self.mdhead="\n<div class=\"flxsld text_cell\" ><div class=\"flx100\">"+mdp.convert(title)+"</div>\n"
         self.mdfoot="\n</div>"
         self.payload=""  
     
     @staticmethod
-    def formatClass(flxwidth=None,frag=False,absPos=False):
+    def formatClass(flxwidth=None,frag=False,absPos=False,xtrclass=None):
         """constructs the appropriate html class string"""
 
         if flxwidth or frag:
@@ -63,6 +66,8 @@ class FlexSlide():
         if absPos:
             cls+=" flxabove"
 
+        if xtrclass:
+            cls+=f" {xtrclass}"
         return cls+"\""
     
     @staticmethod
@@ -86,26 +91,31 @@ class FlexSlide():
         return style+"\""
 
 
-    def addimg(self,path,caption="",flxwidth=None,width=None,frag=False,top=None,left=None):
+    def addimg(self,path,caption="",flxwidth=None,width=None,frag=False,top=None,left=None,alt=None):
         """Adds an image"""
         addcap=""
         
         if caption:
             addcap="<small>%s</small>"%caption
-        
-        md="<img src=\"%s\" alt=\"%s\" %s />%s"%(path,caption,FlexSlide.formatStyle(width=width),addcap)
+        md=""
+        if type(path) == list:
+            for pth in path:
+                md+="<img src=\"%s\" alt=\"%s\" %s />%s"%(pth,alt,FlexSlide.formatStyle(width=width),addcap)
+        else:
+            md="<img src=\"%s\" alt=\"%s\" %s />%s"%(path,alt,FlexSlide.formatStyle(width=width),addcap)
         
         self.addmd(md,frag=frag,flxwidth=flxwidth,top=top,left=left)
             
 
-    def addmd(self,mdcontent,frag=False,flxwidth=None,top=None,left=None):
-        cls=FlexSlide.formatClass(flxwidth,frag,absPos=top or left)
+    def addmd(self,mdcontent,frag=False,flxwidth=None,top=None,left=None,shape=None):
+        cls=FlexSlide.formatClass(flxwidth,frag,absPos=top or left,xtrclass=shape)
         style=FlexSlide.formatStyle(top=top,left=left)
-        self.payload+="\n<div %s %s>\n\n"%(cls,style)+mdcontent+"</div>"
+        htmlcontent=mdp.convert(mdcontent)
+        self.payload+="\n<div %s %s>\n\n"%(cls,style)+htmlcontent+"</div>"
 
 
-    def addVideo(self,path,width=None):
-        self.addmd(Video(path)._repr_html_(),width=width)
+    def addVideo(self,path,flxwidth=None):
+        self.addmd(Video(path)._repr_html_(),flxwidth=flxwidth)
      
     @staticmethod
     def formatItems(items,frag):
@@ -127,13 +137,13 @@ class FlexSlide():
 
         return html
 
-    def addItems(self,items,frag=False,flxwidth=None):       
+    def addItems(self,items,frag=False,flxwidth=None,color=None):       
         
         html=FlexSlide.formatItems(items,frag)
 
-        self.addmd(html,flxwidth=flxwidth)
+        self.addmd(html,flxwidth=flxwidth,shape=color)
 
-    def addSVG(self,svgname,width=None,height=None,flxwidth=None):
+    def addSVG(self,svgname,width=None,height=None,flxwidth=None,frag=False):
         """Embed SVG as code in a code cell and fix relative links"""
 
         svgroot = ET.parse(svgname).getroot()
@@ -158,12 +168,11 @@ class FlexSlide():
             for el in svgroot.findall(".//{*}image[@"+hrefky+"]"):
                 el.attrib[hrefky]=re.sub("\S+/images/","images/",el.attrib[hrefky]) 
 
-        self.addmd(ET.tostring(svgroot).decode('utf-8'),flxwidth=flxwidth)
-        # self.payload+="\n<div \">\n\n"+ET.tostring(svgroot).decode('utf-8')+"</div>"
+        self.addmd(ET.tostring(svgroot).decode('utf-8'),flxwidth=flxwidth,frag=frag)
 
-    def addHTML(self,html):
-        """adds pure html to a flexslide"""
-        self.payload+="\n<div \">\n\n"+html+"</div>"
+    def addCircle(self,mdcontent=None,flxwidth=None,frag=None):
+        """adds a circle, possibly with content"""
+        self.addmd(mdcontent,flxwidth=flxwidth,frag=frag,shape="circ1")
 
     def _repr_markdown_(self):
         # print("\n".join([self.mdhead,self.payload,self.mdfoot]))
