@@ -183,4 +183,12 @@ div.cell.selected:before{
   height: 100%;
 }
 
+.asp16x9{
+  aspect-ratio:16/9;
+}
 
+
+.flxsld iframe{
+  max-height:99%;
+  max-width:99%;
+}

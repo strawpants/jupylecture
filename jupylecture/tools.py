@@ -114,8 +114,8 @@ class FlexSlide():
         self.payload+="\n<div %s %s>\n\n"%(cls,style)+htmlcontent+"</div>"
 
 
-    def addVideo(self,path,flxwidth=None):
-        self.addmd(Video(path)._repr_html_(),flxwidth=flxwidth)
+    def addVideo(self,path,flxwidth=None,html_attributes=None):
+        self.addmd(Video(path,html_attributes=html_attributes)._repr_html_(),flxwidth=flxwidth)
      
     @staticmethod
     def formatItems(items,frag):
@@ -174,11 +174,15 @@ class FlexSlide():
         """adds a circle, possibly with content"""
         self.addmd(mdcontent,flxwidth=flxwidth,frag=frag,shape="circ1")
 
+    def addIframe(self,url,flxwidth="flx100"):
+        html=f'<iframe src="{url}" width="100%" height="100%"></iframe>'
+        self.addmd(html,flxwidth=flxwidth,shape="asp16x9")
+
     def _repr_markdown_(self):
         # print("\n".join([self.mdhead,self.payload,self.mdfoot]))
 
         return "\n".join([self.mdhead,self.payload,self.mdfoot])
-
+    
     
     def display(self):
         display(self)
