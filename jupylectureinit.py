@@ -24,7 +24,7 @@ def copyResource(resource,outfile,link=False):
 def listTemplates():
     templates=[]
     for f in pkg_resources.resource_listdir('jupylecture','templates'):
-        if re.match('.*ipynb',f):
+        if re.match('.*ipynb$',f):
             templates.append(f)
     return templates
 

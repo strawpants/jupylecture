@@ -13,6 +13,7 @@ rooturl=`jupyter notebook list | awk '/^http/{sub("?token","notebooks/'$1'?token
 base=`basename $1 .ipynb`
 ln -sf rise.css ${base}.css
 
+echo extracting from $rooturl into $base.pdf
 decktape rise -s 1920x1080 $rooturl $base.pdf
 
 # clean up the symbolic link
